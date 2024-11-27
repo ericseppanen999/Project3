@@ -303,7 +303,33 @@ class BMPViewer(tk.Tk):
             return 0
     
     def predictors(self,A,B,C):
-        return [A,B,C,A+B-C,A+(B-C)//2,B+(A-C)//2,(A+B)//2]
+        return {"P1":A,"P2":B,"P3":C,"P4":A+B-C,"P5":A+(B-C)//2,"P6":B+(A-C)//2,"P7":(A+B)//2}
+    
+    def min_predictor(self,predictors):
+        min_predictor=None
+        min_error=float("inf")
+        for key,value in predictors.items():
+            error=abs(value)
+            if error<min_error:
+                min_error=error
+                min_predictor=key
+        return min_predictor,predictors[min_predictor]
+    
+    def compute_residuals(self,pixels,w,h):
+        residuals=[]
+        predictor_log=[]
+        for x in range(w):
+            row_res=[]
+            row_pred=[]
+            for y in range(h):
+                A=self.A_pixel(pixels,x,y)
+                B=self.B_pixel(pixels,x,y)
+                C=self.C_pixel(pixels,x,y)
+                predictors=self.predictors(A,B,C)
+                min_pred,value=self.min_predictor(predictors)
+                row_res.append(pixels[y][x]-value)
+                
+
 
     def print_bmp(self,w,h,pixels):
         # printing the original image
